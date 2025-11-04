@@ -16,6 +16,7 @@ import enrollmentRoutes from "./routes/enrollment.routes";
 import recommendationRoutes from './routes/recommendation.routes';
 import transactionRoutes from "./routes/transaction.routes";
 import certificateRoutes from "./routes/certificate.routes";
+import userRoutes from "./routes/user.routes";
 import swaggerUi from "swagger-ui-express";
 import swaggerSpec from "./docs/swagger";
 
@@ -46,6 +47,7 @@ app.use("/api/v1/enrollments", enrollmentRoutes);
 app.use("/api/v1/recommendations", recommendationRoutes);
 app.use("/api/v1/certificates", certificateRoutes);
 app.use("/api/v1/transactions", transactionRoutes);
+app.use("/api/v1/users", userRoutes);
 
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
   explorer: true,

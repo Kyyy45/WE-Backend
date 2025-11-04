@@ -8,6 +8,7 @@ export interface IUser extends Document {
   password?: string;
   role: "admin" | "teacher" | "student";
   isVerified: boolean;
+  isDeactivated?: boolean;
 
   avatarUrl?: string;
   avatarPublicId?: string;
@@ -40,6 +41,7 @@ const UserSchema = new Schema<IUser>(
       default: "student",
     },
     isVerified: { type: Boolean, default: false },
+    isDeactivated: { type: Boolean, default: false },
     avatarUrl: { type: String },
     avatarPublicId: { type: String },
 

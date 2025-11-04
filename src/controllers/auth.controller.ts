@@ -132,6 +132,11 @@ export const login = async (req: Request, res: Response) => {
   }).select("+password +refreshToken +refreshTokenExpires");
 
   if (!user) return res.status(404).json({ message: "User not found" });
+
+  if (user.isDeactivated) {
+    return res.status(403).json({ message: "Akun Anda telah dinonaktifkan." });
+  }
+  
   if (!user.isVerified)
     return res.status(403).json({ message: "Account not activated" });
 
