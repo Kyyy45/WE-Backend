@@ -1,0 +1,195 @@
+# 🌍 WORLDPEDIA EDUCATION — API TESTING GUIDE
+
+# Updated: November 2025
+
+# Jalankan di terminal (PowerShell / CMD / bash)
+
+# Pastikan server sudah jalan di [http://localhost:5000](http://localhost:5000)
+
+==============================
+🧩 AUTHENTICATION & ACCOUNT FLOW
+================================
+
+## REGISTER (Admin / Teacher / Student)
+
+curl -X POST [http://localhost:5000/api/v1/auth/register](http://localhost:5000/api/v1/auth/register) 
+-H "Content-Type: application/json" 
+-d '{"fullName":"Admin Worldpedia", "username":"AdminWE777", "email":"[adminworldpedia777@yopmail.com](mailto:adminworldpedia777@yopmail.com)","password":"AdminPassw0rd!"}'
+
+curl -X POST [http://localhost:5000/api/v1/auth/register](http://localhost:5000/api/v1/auth/register) 
+-H "Content-Type: application/json" 
+-d '{"fullName":"Teacher Worldpedia", "username":"TeacherWE777", "email":"[teacherworldpedia888@yopmail.com](mailto:teacherworldpedia888@yopmail.com)","password":"TeacherPassw0rd!"}'
+
+curl -X POST [http://localhost:5000/api/v1/auth/register](http://localhost:5000/api/v1/auth/register) 
+-H "Content-Type: application/json" 
+-d '{"fullName":"Student Worldpedia", "username":"StudentWE777", "email":"[studentworldpedia888@yopmail.com](mailto:studentworldpedia888@yopmail.com)","password":"StudentPassw0rd!"}'
+
+## ACCOUNT ACTIVATION
+
+curl -X GET "[http://localhost:5000/api/v1/auth/activate?token=](http://localhost:5000/api/v1/auth/activate?token=)<token>&email=[teacherworldpedia888@yopmail.com](mailto:teacherworldpedia888@yopmail.com)"
+
+## RESEND ACTIVATION
+
+curl -X POST [http://localhost:5000/api/v1/auth/resend-activation](http://localhost:5000/api/v1/auth/resend-activation) 
+-H "Content-Type: application/json" 
+-d '{"email":"[teacherworldpedia888@yopmail.com](mailto:teacherworldpedia888@yopmail.com)"}'
+
+## LOGIN (Cookie saved → cookie.txt)
+
+curl -c cookie.txt -X POST [http://localhost:5000/api/v1/auth/login](http://localhost:5000/api/v1/auth/login) 
+-H "Content-Type: application/json" 
+-d '{"emailOrUsername":"[teacherworldpedia888@yopmail.com](mailto:teacherworldpedia888@yopmail.com)","password":"TeacherPassw0rd!"}'
+
+## REFRESH TOKEN
+
+curl -b cookie.txt -X POST [http://localhost:5000/api/v1/auth/refresh-token](http://localhost:5000/api/v1/auth/refresh-token)
+
+## LOGOUT
+
+curl -b cookie.txt -X POST [http://localhost:5000/api/v1/auth/logout](http://localhost:5000/api/v1/auth/logout)
+
+## FORGOT PASSWORD
+
+curl -X POST [http://localhost:5000/api/v1/auth/forgot-password](http://localhost:5000/api/v1/auth/forgot-password) 
+-H "Content-Type: application/json" 
+-d '{"email":"[studentworldpedia888@yopmail.com](mailto:studentworldpedia888@yopmail.com)"}'
+
+## RESET PASSWORD
+
+curl -X POST [http://localhost:5000/api/v1/auth/reset-password](http://localhost:5000/api/v1/auth/reset-password) 
+-H "Content-Type: application/json" 
+-d '{"email":"[studentworldpedia888@yopmail.com](mailto:studentworldpedia888@yopmail.com)","token":"<token>","newPassword":"NewPassw0rd!"}'
+
+====================
+📊 DASHBOARD (Admin)
+====================
+
+curl -H "Authorization: Bearer <ACCESS_TOKEN_ADMIN>" [http://localhost:5000/api/v1/dashboard](http://localhost:5000/api/v1/dashboard)
+
+====================
+👤 PROFILE MANAGEMENT
+=====================
+
+## GET PROFILE (Logged user)
+
+curl -H "Authorization: Bearer <ACCESS_TOKEN>" 
+[http://localhost:5000/api/v1/profile](http://localhost:5000/api/v1/profile)
+
+## UPDATE PROFILE (username / avatarUrl)
+
+curl -X PUT [http://localhost:5000/api/v1/profile](http://localhost:5000/api/v1/profile) 
+-H "Authorization: Bearer <ACCESS_TOKEN>" 
+-H "Content-Type: application/json" 
+-d '{"username": "UpdatedTeacherWE"}'
+
+## CHANGE PASSWORD
+
+curl -X PUT [http://localhost:5000/api/v1/profile/password](http://localhost:5000/api/v1/profile/password) 
+-H "Authorization: Bearer <ACCESS_TOKEN>" 
+-H "Content-Type: application/json" 
+-d '{"oldPassword":"TeacherPassw0rd!","newPassword":"TeacherPassw0rdNEW!"}'
+
+## UPLOAD AVATAR
+
+curl -X PUT [http://localhost:5000/api/v1/profile/avatar](http://localhost:5000/api/v1/profile/avatar) 
+-H "Authorization: Bearer <ACCESS_TOKEN>" 
+-F "avatar=@./sample-avatar.jpg"
+
+====================
+📚 COURSE MANAGEMENT
+====================
+
+## CREATE COURSE (Admin only)
+
+curl -X POST [http://localhost:5000/api/v1/courses](http://localhost:5000/api/v1/courses) 
+-H "Authorization: Bearer <ACCESS_TOKEN_ADMIN>" 
+-H "Content-Type: application/json" 
+-d '{
+"title": "Letterland",
+"shortDescription": "Kursus membaca interaktif",
+"description": "Pelajari membaca interaktif untuk anak usia dini",
+"teacherId": "<TEACHER_ID>",
+"price": 0,
+"category": "Literacy",
+"isPublished": true
+}'
+
+## LIST COURSES
+
+curl -H "Authorization: Bearer <ACCESS_TOKEN>" 
+[http://localhost:5000/api/v1/courses](http://localhost:5000/api/v1/courses)
+
+## GET COURSE BY ID / SLUG
+
+curl -H "Authorization: Bearer <ACCESS_TOKEN>" 
+[http://localhost:5000/api/v1/courses/](http://localhost:5000/api/v1/courses/)<COURSE_ID_OR_SLUG>
+
+## UPDATE COURSE (Admin)
+
+curl -X PUT [http://localhost:5000/api/v1/courses/](http://localhost:5000/api/v1/courses/)<COURSE_ID> 
+-H "Authorization: Bearer <ACCESS_TOKEN_ADMIN>" 
+-H "Content-Type: application/json" 
+-d '{"title":"Letterland Advanced","price":150000}'
+
+## DELETE COURSE (Admin)
+
+curl -X DELETE [http://localhost:5000/api/v1/courses/](http://localhost:5000/api/v1/courses/)<COURSE_ID> 
+-H "Authorization: Bearer <ACCESS_TOKEN_ADMIN>"
+
+========================
+🖼️ COURSE THUMBNAIL (Admin)
+============================
+
+## UPLOAD THUMBNAIL
+
+curl -X POST [http://localhost:5000/api/v1/course-thumbnails/](http://localhost:5000/api/v1/course-thumbnails/)<COURSE_ID>/thumbnail 
+-H "Authorization: Bearer <ACCESS_TOKEN_ADMIN>" 
+-F "thumbnail=@./sample-thumbnail.jpg"
+
+## DELETE THUMBNAIL
+
+curl -X DELETE [http://localhost:5000/api/v1/course-thumbnails/](http://localhost:5000/api/v1/course-thumbnails/)<COURSE_ID>/thumbnail 
+-H "Authorization: Bearer <ACCESS_TOKEN_ADMIN>"
+
+========================
+🎓 ENROLLMENT MANAGEMENT
+========================
+
+## 1️⃣ ENROLL STUDENT (Admin)
+
+curl -X POST [http://localhost:5000/api/v1/enrollments](http://localhost:5000/api/v1/enrollments) 
+-H "Authorization: Bearer <ACCESS_TOKEN_ADMIN>" 
+-H "Content-Type: application/json" 
+-d '{
+"courseId": "<COURSE_ID>",
+"studentId": "<STUDENT_ID>"
+}'
+
+## 2️⃣ UPDATE PROGRESS (Teacher)
+
+curl -X PUT [http://localhost:5000/api/v1/enrollments/](http://localhost:5000/api/v1/enrollments/)<ENROLLMENT_ID>/progress 
+-H "Authorization: Bearer <ACCESS_TOKEN_TEACHER>" 
+-H "Content-Type: application/json" 
+-d '{
+"progress": 85,
+"grade": "A",
+"note": "Excellent understanding of the material."
+}'
+
+## 3️⃣ GET MY ENROLLMENTS (Student)
+
+curl -H "Authorization: Bearer <ACCESS_TOKEN_STUDENT>" 
+[http://localhost:5000/api/v1/enrollments/me](http://localhost:5000/api/v1/enrollments/me)
+
+========================
+☁️ CLOUDINARY TEST
+==================
+
+Check Cloudinary dashboard:
+[https://console.cloudinary.com/](https://console.cloudinary.com/)
+
+========================
+✅ HEALTH CHECK
+==============
+
+curl [http://localhost:5000/api/health](http://localhost:5000/api/health)
