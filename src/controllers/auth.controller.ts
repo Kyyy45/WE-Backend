@@ -35,12 +35,6 @@ export const register = async (req: Request, res: Response) => {
   try {
     const { fullName, username, email, password, confirmPassword } = req.body;
 
-    if (!fullName || !username || !email || !password || !confirmPassword)
-      return res.status(400).json({ message: "All fields are required" });
-
-    if (password !== confirmPassword)
-      return res.status(400).json({ message: "Passwords do not match" });
-
     const existingEmail = await User.findOne({ email });
     if (existingEmail)
       return res.status(400).json({ message: "Email already registered" });
@@ -318,8 +312,6 @@ export const forgotPassword = async (req: Request, res: Response) => {
 export const resetPassword = async (req: Request, res: Response) => {
   try {
     const { email, token, newPassword } = req.body;
-    if (!email || !token || !newPassword)
-      return res.status(400).json({ message: "Invalid request" });
 
     const user = await User.findOne({ email }).select(
       "+password +resetPasswordToken +resetPasswordExpires"
