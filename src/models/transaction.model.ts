@@ -1,6 +1,7 @@
 import mongoose, { Document, Schema } from "mongoose";
 import { IUser } from "./user.model";
 import { ICourse } from "./course.model";
+import { ICustomAnswer } from "./enrollment.model";
 
 /**
  * Transaction Model — untuk mencatat pembayaran kursus
@@ -15,6 +16,7 @@ export interface ITransaction extends Document {
   status: "pending" | "success" | "failed" | "expired";
   qrCodeUrl?: string;
   description?: string;
+  customAnswers?: ICustomAnswer[];
   rawResponse?: any; // untuk simpan respon JSON dari Midtrans
   createdAt: Date;
   updatedAt: Date;
@@ -39,6 +41,15 @@ const transactionSchema = new Schema<ITransaction>(
     },
     qrCodeUrl: { type: String },
     description: { type: String },
+    customAnswers: {
+      type: [
+        {
+          fieldName: { type: String, required: true },
+          value: { type: Schema.Types.Mixed, required: true },
+        },
+      ],
+      default: [],
+    },
     rawResponse: { type: Schema.Types.Mixed },
   },
   { timestamps: true }
