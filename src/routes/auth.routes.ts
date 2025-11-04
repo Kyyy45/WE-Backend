@@ -67,7 +67,6 @@ router.post(
 );
 
 /* -------------------------- RUTE LAINNYA -------------------------- */
-
 router.post(
   "/login",
   [
