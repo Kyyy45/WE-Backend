@@ -2,7 +2,6 @@ import { Request, Response } from "express";
 import Course from "../models/course.model";
 import User from "../models/user.model";
 import { AuthenticatedRequest } from "../middlewares/verifyToken";
-import { logger } from "../utils/logger";
 
 /**
  * GET /api/v1/recommendations

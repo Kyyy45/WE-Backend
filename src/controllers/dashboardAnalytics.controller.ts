@@ -5,7 +5,6 @@ import Course from "../models/course.model";
 import Enrollment from "../models/enrollment.model";
 import Certificate from "../models/certificate.model";
 import Transaction from "../models/transaction.model";
-import { logger } from "../utils/logger";
 import { getCache, setCache } from "../utils/dashboardCache";
 
 /**
@@ -22,7 +21,7 @@ export const getDashboardAnalytics = async (
   if (!req.user || req.user.role !== "admin")
     return res.status(403).json({ message: "Forbidden" });
 
-  // 🔹 Try cache
+  // Try cache
   const cached = getCache<any>(CACHE_KEY);
   if (cached) return res.json({ fromCache: true, ...cached });
 
