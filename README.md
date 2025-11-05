@@ -1,4 +1,3 @@
-```markdown
 # 🌐 Worldpedia Education — Backend API Documentation
 
 Sistem ini dibangun dengan **Node.js (Express + TypeScript)** menggunakan arsitektur **MERN Stack**.
@@ -6,191 +5,148 @@ Fitur utama meliputi autentikasi JWT, manajemen kursus, pendaftaran siswa, siste
 
 ---
 
-## 🚀 Base URL
+## 🚀 Cara Menjalankan Proyek
 
-**Development:**
+1.  **Clone repositori**
+    ```bash
+    git clone [https://github.com/Kyyy45/WE-Backend.git](https://github.com/Kyyy45/WE-Backend.git)
+    cd WE-Backend
+    ```
 
-```
+2.  **Install dependensi**
+    ```bash
+    npm install
+    ```
 
-http://localhost:5000/api/v1
+3.  **Setup file `.env`**
+    Buat file `.env` di root proyek dan isi variabel yang diperlukan (lihat daftar lengkap di bawah).
 
-```
+4.  **Jalankan server development**
+    ```bash
+    npm run dev
+    ```
 
----
-
-## 🔐 Authentication & Authorization
-
-| Role | Deskripsi |
-| :--- | :--- |
-| **Admin** | Mengelola pengguna, kursus, dashboard, transaksi. |
-| **Teacher** | Mengajar kursus, menilai & memantau siswa. |
-| **Student** | Mendaftar kursus, mengakses materi, melihat sertifikat. |
-
-Gunakan header:
-
-```
-
-Authorization: Bearer \<access\_token\>
-
-````
+5.  **Akses API**
+    * **Base URL:** `http://localhost:5000/api/v1`
+    * **API Docs (Swagger):** `http://localhost:5000/api-docs`
 
 ---
 
-## 📦 API Endpoints
+## 🔑 Variabel Lingkungan (.env)
 
-### 1. 🧍 Auth Routes — `/auth`
+Pastikan Anda membuat file `.env` dengan variabel berikut:
 
-| Method | Endpoint | Deskripsi |
-| :--- | :--- | :--- |
-| `POST` | `/register` | Registrasi akun baru |
-| `POST` | `/resend-activation` | Kirim ulang email aktivasi |
-| `GET` | `/activate?token=...` | Aktivasi akun |
-| `POST` | `/login` | Login dan dapatkan JWT |
-| `POST` | `/refresh-token` | Perbarui access token |
-| `POST` | `/logout` | Logout dan hapus token |
-| `POST` | `/forgot-password` | Permintaan reset password |
-| `POST` | `/reset-password` | Reset password dengan token |
+```plaintext
+# Server & Klien
+NODE_ENV=development
+PORT=5000
+CLIENT_URL=http://localhost:3000
 
----
+# Database
+MONGO_URI=...
 
-### 2. 🎓 Course Routes — `/courses`
+# JWT Secrets
+JWT_SECRET=...
+JWT_REFRESH_SECRET=...
+JWT_EXPIRES_IN=15m
+JWT_REFRESH_EXPIRE=7d
 
-| Method | Endpoint | Role | Deskripsi |
-| :--- | :--- | :--- | :--- |
-| `GET` | `/` | All | Lihat semua kursus |
-| `GET` | `/:id` | All | Detail kursus |
-| `POST` | `/` | Admin | Tambah kursus baru |
-| `PUT` | `/:id` | Admin | Update kursus |
-| `DELETE` | `/:id` | Admin | Hapus kursus |
+# Email (Nodemailer)
+SMTP_HOST=...
+SMTP_PORT=...
+SMTP_USER=...
+SMTP_PASS=...
+EMAIL_FROM="Worldpedia" <no-reply@worldpedia.com>
 
----
+# Cloudinary
+CLOUDINARY_URL=...
 
-### 3. 🖼 Course Thumbnail Routes — `/course-thumbnails`
+# Midtrans
+MIDTRANS_SERVER_KEY=...
+MIDTRANS_BASE_URL=...
 
-| Method | Endpoint | Role | Deskripsi |
-| :--- | :--- | :--- | :--- |
-| `POST` | `/:id/thumbnail` | Admin | Upload thumbnail course |
-| `DELETE` | `/:id/thumbnail` | Admin | Hapus thumbnail course |
+# DANA (jika digunakan)
+DANA_BASE_URL=...
+DANA_CLIENT_ID=...
+DANA_CLIENT_SECRET=...
+DANA_API_KEY=...
 
----
+# Keamanan & Lainnya
+RATE_LIMIT_POINTS=100
+RATE_LIMIT_DURATION=60
+DASHBOARD_CACHE_TTL=60
+DASHBOARD_MONTHS=6
+🔐 Authentication & Authorization
+Role	Deskripsi
+Admin	Mengelola pengguna, kursus, dashboard, transaksi.
+Teacher	Mengajar kursus, menilai & memantau siswa.
+Student	Mendaftar kursus, mengakses materi, melihat sertifikat.
 
-### 4. 📊 Dashboard Routes — `/dashboard`
+Ekspor ke Spreadsheet
 
-| Method | Endpoint | Role | Deskripsi |
-| :--- | :--- | :--- | :--- |
-| `GET` | `/` | All Logged-in | Dashboard user (progress, statistik) |
-| `GET` | `/analytics` | Admin | Dashboard analitik (tren, distribusi user, top course, transaksi) |
+Gunakan header: Authorization: Bearer <access_token>
 
----
+📦 API Endpoints
+1. 🧍 Auth Routes — /auth
+(Lihat src/docs/auth.docs.ts untuk detail)
 
-### 5. 📜 Enrollment Routes — `/enrollments`
+2. 👥 User Management Routes — /users (Khusus Admin)
+Method	Endpoint	Role	Deskripsi
+GET	/	Admin	Lihat semua pengguna (dengan pagination)
+PUT	/:id/role	Admin	Ubah role pengguna (student, teacher, admin)
+DELETE	/:id	Admin	Nonaktifkan (soft delete) akun pengguna
 
-| Method | Endpoint | Role | Deskripsi |
-| :--- | :--- | :--- | :--- |
-| `POST` | `/` | Admin | Tambahkan siswa ke kursus |
-| `GET` | `/me` | Student | Lihat kursus yang diikuti |
-| `PUT` | `/:id/progress` | Teacher | Update nilai/progress siswa |
+Ekspor ke Spreadsheet
 
----
+3. 🎓 Course Routes — /courses
+(Lihat src/docs/course.docs.ts untuk detail)
 
-### 6. 🧾 Certificate Routes — `/certificates`
+4. 🖼 Course Thumbnail Routes — /course-thumbnails
+(Lihat src/docs/courseThumbnail.docs.ts untuk detail)
 
-| Method | Endpoint | Role | Deskripsi |
-| :--- | :--- | :--- | :--- |
-| `GET` | `/` | Admin | Lihat semua sertifikat |
-| `GET` | `/me` | Student | Lihat sertifikat milik sendiri |
-| `GET` | `/:id` | All | Lihat detail sertifikat tertentu |
+5. 📊 Dashboard Routes — /dashboard
+(Lihat src/docs/dashboard.docs.ts & dashboardAnalytics.docs.ts untuk detail)
 
----
+6. 📜 Enrollment Routes — /enrollments
+(Lihat src/docs/enrollment.docs.ts untuk detail)
 
-### 7. 👤 Profile Routes — `/profile`
+7. 🧾 Certificate Routes — /certificates
+(Lihat src/docs/certificate.docs.ts untuk detail)
 
-| Method | Endpoint | Role | Deskripsi |
-| :--- | :--- | :--- | :--- |
-| `GET` | `/` | All Logged-in | Ambil data profil pengguna |
-| `PUT` | `/` | All Logged-in | Update profil |
-| `PUT` | `/password` | All Logged-in | Ganti password |
-| `PUT` | `/avatar` | All Logged-in | Upload/ganti avatar (Cloudinary) |
+8. 👤 Profile Routes — /profile
+(Lihat src/docs/profile.docs.ts untuk detail)
 
----
+9. 🤖 Recommendation Routes — /recommendations
+(Lihat src/docs/recommendation.docs.ts untuk detail)
 
-### 8. 🤖 Recommendation Routes — `/recommendations`
+10. 💳 Transaction Routes — /transactions
+(Lihat src/docs/transaction.docs.ts untuk detail)
 
-| Method | Endpoint | Role | Deskripsi |
-| :--- | :--- | :--- | :--- |
-| `GET` | `/` | Student | Dapatkan rekomendasi kursus berdasarkan usia, pendidikan, dan minat |
+⚙️ Authentication Flow
+Plaintext
 
----
-
-### 9. 💳 Transaction Routes — `/transactions`
-
-| Method | Endpoint | Role | Deskripsi |
-| :--- | :--- | :--- | :--- |
-| `POST` | `/` | Student | Buat transaksi pembayaran Midtrans |
-| `GET` | `/me` | Student | Lihat riwayat transaksi pribadi |
-| `POST` | `/callback` | Public (Webhook) | Callback status pembayaran dari Midtrans |
-
----
-
-## 📈 Dashboard Analytics Data Example
-
-```json
-{
-  "totals": {
-    "totalUsers": 120,
-    "totalCourses": 8,
-    "totalEnrollments": 65,
-    "totalCertificates": 20
-  },
-  "roleDistribution": [
-    { "role": "student", "count": 90 },
-    { "role": "teacher", "count": 10 },
-    { "role": "admin", "count": 2 }
-  ],
-  "monthlyEnrollments": [
-    { "month": "2025-07", "count": 12 },
-    { "month": "2025-08", "count": 20 }
-  ],
-  "topCourses": [
-    { "title": "Web Development", "enrollCount": 25 },
-    { "title": "AI Basics", "enrollCount": 15 }
-  ]
-}
-````
-
------
-
-## ⚙️ Authentication Flow
-
-```text
 REGISTER -> ACTIVATE EMAIL -> LOGIN -> RECEIVE JWT ->
 ACCESS PROTECTED ROUTES -> REFRESH TOKEN -> LOGOUT
-```
+💬 Notes
+Semua token menggunakan JWT Access & Refresh.
 
------
+File diupload ke Cloudinary (thumbnail/avatar).
 
-## 💬 Notes
+Pembayaran via Midtrans API (sandbox).
 
-  * Semua token menggunakan **JWT Access & Refresh**.
-  * File diupload ke **Cloudinary** (thumbnail/avatar).
-  * Pembayaran via **Midtrans API (sandbox)**.
-  * Dashboard admin realtime (menggunakan agregasi MongoDB).
-  * Rekomendasi kursus berbasis **content-based filtering**.
+Dashboard admin realtime (menggunakan agregasi MongoDB).
 
------
+Rekomendasi kursus berbasis content-based filtering.
 
-## 🧠 Developer Info
+🧠 Developer Info
+Backend: Node.js, Express, TypeScript
 
-  * **Backend:** Node.js, Express, TypeScript
-  * **Database:** MongoDB + Mongoose
-  * **Security:** JWT, Helmet, Rate Limiter
-  * **Payment:** Midtrans Sandbox API
-  * **Docs:** Swagger UI → `http://localhost:5000/api-docs`
+Database: MongoDB + Mongoose
 
------
+Keamanan: JWT, helmet, cors, express-rate-limit, express-validator, express-mongo-sanitize, hpp
 
-📘 **Author:** Rizky Akbar
-🎓 **Project:** Worldpedia Education (Chatbot + Recommendation + Analytics Dashboard)
+Payment: Midtrans Sandbox API
 
-```
-```
+Docs: Swagger UI → http://localhost:5000/api-docs
+
+📘 Author: Rizky Akbar 🎓 Project: Worldpedia Education (Chatbot + Recommendation + Analytics Dashboard)
