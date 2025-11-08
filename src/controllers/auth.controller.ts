@@ -21,7 +21,7 @@ const setRefreshCookie = (res: Response, token: string) => {
     secure,
     sameSite: "lax",
     maxAge: getRefreshExpireMs(),
-    path: "/api/v1/auth",
+    path: "/",
   });
 };
 

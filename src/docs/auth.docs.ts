@@ -1,194 +1,189 @@
-/**
- * @swagger
- * tags:
- * name: Authentication
- * description: Endpoint untuk registrasi, login, aktivasi, dan reset password
- */
+export const authDocs = {
+  // 📘 Register
+  "/auth/register": {
+    post: {
+      tags: ["Auth"],
+      summary: "Register a new user",
+      description: "Registers a new user and sends activation email.",
+      requestBody: {
+        required: true,
+        content: {
+          "application/json": {
+            schema: {
+              type: "object",
+              required: ["fullName", "username", "email", "password", "confirmPassword"],
+              properties: {
+                fullName: { type: "string", example: "John Doe" },
+                username: { type: "string", example: "johndoe" },
+                email: { type: "string", example: "john@example.com" },
+                password: { type: "string", example: "Password@123" },
+                confirmPassword: { type: "string", example: "Password@123" },
+              },
+            },
+          },
+        },
+      },
+      responses: {
+        201: { description: "Registered successfully. Activation email sent." },
+        400: { description: "Validation error or email already exists" },
+      },
+    },
+  },
 
-/**
- * @swagger
- * /api/v1/auth/register:
- * post:
- * summary: Registrasi pengguna baru
- * tags: [Authentication]
- * requestBody:
- * required: true
- * content:
- * application/json:
- * schema:
- * type: object
- * required: [fullName, username, email, password, confirmPassword]
- * properties:
- * fullName:
- * type: string
- * example: Rizky Akbar
- * username:
- * type: string
- * example: rizky123
- * email:
- * type: string
- * format: email
- * example: rizky@mail.com
- * password:
- * type: string
- * description: "Minimal 8 karakter, 1 huruf kapital, 1 angka, 1 simbol"
- * example: "PasswordKuat123!"
- * confirmPassword:
- * type: string
- * example: "PasswordKuat123!"
- * responses:
- * 201:
- * description: Registrasi berhasil dan email aktivasi dikirim
- * 400:
- * description: Input tidak valid
- */
+  // 📘 Resend Activation Email
+  "/auth/resend-activation": {
+    post: {
+      tags: ["Auth"],
+      summary: "Resend activation email",
+      description: "Resends activation email if user is not yet activated.",
+      requestBody: {
+        required: true,
+        content: {
+          "application/json": {
+            schema: {
+              type: "object",
+              required: ["email"],
+              properties: {
+                email: { type: "string", example: "john@example.com" },
+              },
+            },
+          },
+        },
+      },
+      responses: {
+        200: { description: "Activation email resent successfully." },
+        404: { description: "User not found" },
+        400: { description: "Account already activated" },
+      },
+    },
+  },
 
-/**
- * @swagger
- * /api/v1/auth/login:
- * post:
- * summary: Login user
- * tags: [Authentication]
- * requestBody:
- * required: true
- * content:
- * application/json:
- * schema:
- * type: object
- * required: [emailOrUsername, password]
- * properties:
- * emailOrUsername:
- * type: string
- * example: rizky@mail.com
- * password:
- * type: string
- * example: "PasswordKuat123!"
- * responses:
- * 200:
- * description: Login sukses dan mengembalikan token JWT
- * 403:
- * description: Akun belum diaktivasi
- * 400:
- * description: Kredensial salah
- */
+  // 📘 Activate Account
+  "/auth/activate": {
+    get: {
+      tags: ["Auth"],
+      summary: "Activate user account",
+      description: "Activates user account using email and token sent by email.",
+      parameters: [
+        { name: "token", in: "query", required: true, schema: { type: "string" } },
+        { name: "email", in: "query", required: true, schema: { type: "string" } },
+      ],
+      responses: {
+        200: { description: "Account activated successfully" },
+        400: { description: "Invalid or expired activation token" },
+      },
+    },
+  },
 
-/**
- * @swagger
- * /api/v1/auth/resend-activation:
- * post:
- * summary: Kirim ulang email aktivasi
- * tags: [Authentication]
- * requestBody:
- * required: true
- * content:
- * application/json:
- * schema:
- * type: object
- * required: [email]
- * properties:
- * email:
- * type: string
- * format: email
- * example: rizky@mail.com
- * responses:
- * 200:
- * description: Email aktivasi berhasil dikirim ulang
- * 400:
- * description: Akun sudah diaktivasi atau email tidak valid
- * 404:
- * description: Pengguna tidak ditemukan
- */
+  // 📘 Login
+  "/auth/login": {
+    post: {
+      tags: ["Auth"],
+      summary: "Login user",
+      description: "Logs in a user and returns access token and refresh token cookie.",
+      requestBody: {
+        required: true,
+        content: {
+          "application/json": {
+            schema: {
+              type: "object",
+              required: ["emailOrUsername", "password"],
+              properties: {
+                emailOrUsername: { type: "string", example: "johndoe" },
+                password: { type: "string", example: "Password@123" },
+              },
+            },
+          },
+        },
+      },
+      responses: {
+        200: { description: "Login successful" },
+        400: { description: "Invalid credentials" },
+        403: { description: "Account not activated" },
+      },
+    },
+  },
 
-/**
- * @swagger
- * /api/v1/auth/activate:
- * get:
- * summary: Aktivasi akun user
- * tags: [Authentication]
- * parameters:
- * - name: token
- * in: query
- * required: true
- * schema:
- * type: string
- * - name: email
- * in: query
- * required: true
- * schema:
- * type: string
- * responses:
- * 200:
- * description: Akun berhasil diaktivasi
- * 400:
- * description: Token tidak valid atau kedaluwarsa
- */
+  // 📘 Refresh Token
+  "/auth/refresh-token": {
+    post: {
+      tags: ["Auth"],
+      summary: "Refresh access token",
+      description:
+        "Uses refresh token cookie to generate a new access token. Requires valid refresh token.",
+      responses: {
+        200: { description: "Access token refreshed successfully" },
+        401: { description: "Invalid or expired refresh token" },
+      },
+    },
+  },
 
-/**
- * @swagger
- * /api/v1/auth/logout:
- * post:
- * summary: Logout user (hapus refresh token)
- * tags: [Authentication]
- * security:
- * - bearerAuth: []
- * responses:
- * 200:
- * description: Logout berhasil
- */
+  // 📘 Logout
+  "/auth/logout": {
+    post: {
+      tags: ["Auth"],
+      summary: "Logout user",
+      description: "Clears refresh token cookie and invalidates session.",
+      responses: {
+        200: { description: "Logged out successfully" },
+      },
+    },
+  },
 
-/**
- * @swagger
- * /api/v1/auth/forgot-password:
- * post:
- * summary: Kirim email reset password
- * tags: [Authentication]
- * requestBody:
- * required: true
- * content:
- * application/json:
- * schema:
- * type: object
- * properties:
- * email:
- * type: string
- * format: email
- * example: rizky@mail.com
- * responses:
- * 200:
- * description: Email reset password dikirim
- */
+  // 📘 Forgot Password
+  "/auth/forgot-password": {
+    post: {
+      tags: ["Auth"],
+      summary: "Send password reset link",
+      description: "Sends password reset email with token link.",
+      requestBody: {
+        required: true,
+        content: {
+          "application/json": {
+            schema: {
+              type: "object",
+              required: ["email"],
+              properties: {
+                email: { type: "string", example: "john@example.com" },
+              },
+            },
+          },
+        },
+      },
+      responses: {
+        200: { description: "Password reset link sent" },
+        404: { description: "User not found" },
+      },
+    },
+  },
 
-/**
- * @swagger
- * /api/v1/auth/reset-password:
- * post:
- * summary: Reset password
- * tags: [Authentication]
- * requestBody:
- * required: true
- * content:
- * application/json:
- * schema:
- * type: object
- * required: [email, token, newPassword, confirmNewPassword]
- * properties:
- * email:
- * type: string
- * format: email
- * example: rizky@mail.com
- * token:
- * type: string
- * example: "e0f12fd1d3d3c0bae4de97638281fe081abf43a9c8141317"
- * newPassword:
- * type: string
- * description: "Minimal 8 karakter, 1 huruf kapital, 1 angka, 1 simbol"
- * example: "PasswordBaru123!"
- * confirmNewPassword:
- * type: string
- * example: "PasswordBaru123!"
- * responses:
- * 200:
- * description: Password berhasil diperbarui
- * 400:
- * description: Token tidak valid atau password tidak cocok
- */
+  // 📘 Reset Password
+  "/auth/reset-password": {
+    post: {
+      tags: ["Auth"],
+      summary: "Reset password",
+      description: "Resets password using token sent to email.",
+      requestBody: {
+        required: true,
+        content: {
+          "application/json": {
+            schema: {
+              type: "object",
+              required: ["email", "token", "newPassword", "confirmNewPassword"],
+              properties: {
+                email: { type: "string", example: "john@example.com" },
+                token: { type: "string", example: "b7c8f9..." },
+                newPassword: { type: "string", example: "NewPassword@123" },
+                confirmNewPassword: { type: "string", example: "NewPassword@123" },
+              },
+            },
+          },
+        },
+      },
+      responses: {
+        200: { description: "Password updated successfully" },
+        400: { description: "Invalid or expired token" },
+      },
+    },
+  },
+};

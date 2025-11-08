@@ -3,7 +3,7 @@ import helmet from 'helmet';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import morgan from 'morgan';
-import expressMongoSanitize from 'express-mongo-sanitize';
+import { sanitizeInput } from "./middlewares/sanitize.middleware";
 import hpp from 'hpp';
 import rateLimiter from './middlewares/rateLimiter.middleware';
 import authRoutes from './routes/auth.routes';
@@ -28,7 +28,7 @@ app.use(cors({ origin: process.env.CLIENT_URL, credentials: true }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.use(expressMongoSanitize());
+app.use(sanitizeInput);
 app.use(hpp());
 
 app.use(cookieParser());
