@@ -127,6 +127,10 @@ export const listCourses = async (req: AuthenticatedRequest, res: Response) => {
     limit = "12",
     sortBy = "createdAt",
     order = "desc",
+
+    age,
+    educationLevel,
+    interests,
   } = req.query as Record<string, string>;
 
   const pageNum = Math.max(1, parseInt(page, 10) || 1);
@@ -139,6 +143,30 @@ export const listCourses = async (req: AuthenticatedRequest, res: Response) => {
   if (teacherId) filter.teacher = teacherId;
   if (minPrice) filter.price = { ...filter.price, $gte: Number(minPrice) };
   if (maxPrice) filter.price = { ...filter.price, $lte: Number(maxPrice) };
+
+  // 1. Filter berdasarkan umur
+  if (age) {
+    const ageNum = Number(age);
+    // Pastikan 'age' adalah angka yang valid sebelum memfilter
+    if (!isNaN(ageNum)) {
+      // Cari kursus di mana umur pengguna berada di antara min dan max
+      filter["targetAgeRange.min"] = { $lte: ageNum };
+      filter["targetAgeRange.max"] = { $gte: ageNum };
+    }
+  }
+  
+  // 2. Filter berdasarkan tingkat pendidikan
+  if (educationLevel) {
+    filter.targetEducationLevel = educationLevel;
+  }
+  
+  // 3. Filter berdasarkan minat
+  if (interests) {
+    // Ubah string "Sains,Teknologi" menjadi array ["Sains", "Teknologi"]
+    const interestsArray = interests.split(','); 
+    // Cari kursus yang memiliki setidaknya SATU minat yang sama
+    filter.targetInterests = { $in: interestsArray };
+  }
 
   // role-based visibility:
   if (!user) {

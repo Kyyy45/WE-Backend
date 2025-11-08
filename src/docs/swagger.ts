@@ -6,7 +6,6 @@ import { dashboardDocs } from "./dashboard.docs";
 import { dashboardAnalyticsDocs } from "./dashboardAnalytics.docs";
 import { enrollmentDocs } from "./enrollment.docs";
 import { profileDocs } from "./profile.docs";
-import { recommendationDocs } from "./recommendation.docs";
 import { transactionDocs } from "./transaction.docs";
 import { certificateDocs } from "./certificate.docs";
 
@@ -18,7 +17,6 @@ const paths = {
   ...dashboardAnalyticsDocs,
   ...enrollmentDocs,
   ...profileDocs,
-  ...recommendationDocs,
   ...transactionDocs,
   ...certificateDocs,
 };
@@ -36,7 +34,7 @@ API ini digunakan oleh aplikasi **Worldpedia Education** untuk mengelola:
 - 🎓 *Kursus & Enrollments*
 - 💳 *Pembayaran & Transaksi (Midtrans)*
 - 📈 *Dashboard & Analitik*
-- 🏅 *Sertifikat & Rekomendasi Kursus*
+- 🏅 *Sertifikat*
 
 **Base URL:** \`https://your-domain.com/api/v1\`  
 **Auth:** Bearer Token (JWT)  
@@ -69,7 +67,6 @@ API ini digunakan oleh aplikasi **Worldpedia Education** untuk mengelola:
       description: "Manajemen enrollment siswa ke kursus",
     },
     { name: "Profile", description: "Profil pengguna dan avatar" },
-    { name: "Recommendations", description: "Rekomendasi kursus untuk siswa" },
     { name: "Transactions", description: "Transaksi pembayaran via Midtrans" },
     { name: "Certificates", description: "Manajemen sertifikat siswa" },
   ],

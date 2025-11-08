@@ -30,7 +30,10 @@ router.post(
   "/register",
   [
     body("fullName", "Nama lengkap wajib diisi").notEmpty().isLength({ min: 3 }),
-    body("username", "Username minimal 3 karakter").notEmpty().isLength({ min: 3 }),
+    body("username")
+      .notEmpty().withMessage("Username wajib diisi")
+      .isLength({ min: 3 }).withMessage("Username minimal 3 karakter")
+      .matches(/\d/).withMessage("Username harus mengandung minimal satu angka (0-9)"),
     body("email", "Format email tidak valid").isEmail(),
     
     passwordRules("password"),
@@ -42,7 +45,7 @@ router.post(
       return true;
     }),
   ],
-  validate, // Middleware yang menangani error validasi
+  validate,
   register
 );
 

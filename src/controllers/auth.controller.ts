@@ -2,7 +2,9 @@ import { Request, Response } from "express";
 import bcrypt from "bcryptjs";
 import User from "../models/user.model";
 import { generateToken, hashToken } from "../utils/tokens";
-import { sendMail } from "../utils/sendEmail";
+import { activationTemplate } from "../utils/email/activationTemplate";
+import { resetPasswordTemplate } from "../utils/email/resetPasswordTemplate";
+import { sendMail } from "../utils/email/sendEmail";
 import {
   generateAccessToken,
   generateRefreshToken,
@@ -41,6 +43,12 @@ export const register = async (req: Request, res: Response) => {
   if (existingUsername)
     return res.status(400).json({ message: "Username already taken" });
 
+  if (!/\d/.test(username)) {
+    return res
+      .status(400)
+      .json({ message: "Username harus mengandung minimal satu angka (0-9)" });
+  }
+
   const user = new User({ fullName, username, email, password });
 
   const rawActivation = await generateToken(24);
@@ -55,9 +63,7 @@ export const register = async (req: Request, res: Response) => {
   await sendMail(
     email,
     "Aktivasi Akun Worldpedia Education",
-    `<p>Halo ${fullName},</p>
-       <p>Silakan klik link di bawah ini untuk mengaktifkan akun Anda (berlaku 24 jam):</p>
-       <p><a href="${activationLink}">${activationLink}</a></p>`
+    activationTemplate(fullName, activationLink)
   );
 
   return res
@@ -71,7 +77,7 @@ export const resendActivation = async (req: Request, res: Response) => {
   if (!email) return res.status(400).json({ message: "Email is required" });
 
   const user = await User.findOne({ email });
-  if (!user) return res.status(404).json({ message: "User not found" });
+  if (!user) return res.status(404).json({ message: "User tidak ditemukan" });
   if (user.isVerified)
     return res.status(400).json({ message: "Account already activated" });
 
@@ -131,12 +137,12 @@ export const login = async (req: Request, res: Response) => {
     $or: [{ email: emailOrUsername }, { username: emailOrUsername }],
   }).select("+password +refreshToken +refreshTokenExpires");
 
-  if (!user) return res.status(404).json({ message: "User not found" });
+  if (!user) return res.status(404).json({ message: "User tidak ditemukan" });
 
   if (user.isDeactivated) {
     return res.status(403).json({ message: "Akun Anda telah dinonaktifkan." });
   }
-  
+
   if (!user.isVerified)
     return res.status(403).json({ message: "Account not activated" });
 
@@ -189,7 +195,7 @@ export const refreshToken = async (req: Request, res: Response) => {
   );
   if (!user) {
     clearRefreshCookie(res);
-    return res.status(401).json({ message: "Invalid token (user not found)" });
+    return res.status(401).json({ message: "Invalid token (User tidak ditemukan)" });
   }
 
   const hashed = hashToken(token);
@@ -252,23 +258,23 @@ export const logout = async (req: Request, res: Response) => {
 /* ---------------------------- FORGOT PASSWORD ------------------------ */
 export const forgotPassword = async (req: Request, res: Response) => {
   const { email } = req.body;
-  if (!email) return res.status(400).json({ message: "Email required" });
+  if (!email) return res.status(400).json({ message: "Email wajib diisi" });
 
   const user = await User.findOne({ email });
-  if (!user) return res.status(404).json({ message: "User not found" });
+  if (!user) return res.status(404).json({ message: "User tidak ditemukan" });
 
   const raw = await generateToken(24);
   user.resetPasswordToken = hashToken(raw);
   user.resetPasswordExpires = new Date(Date.now() + 15 * 60 * 1000); // 15 menit
   await user.save();
 
-  const link = `${CLIENT_URL}/reset-password?token=${raw}&email=${encodeURIComponent(
+  const resetLink = `${CLIENT_URL}/reset-password?token=${raw}&email=${encodeURIComponent(
     email
   )}`;
   await sendMail(
     email,
-    "Reset Password Worldpedia",
-    `<p>Klik untuk reset password:</p><p><a href="${link}">${link}</a></p><p>Link berlaku 15 menit.</p>`
+    "Reset Password Akun Worldpedia Education",
+      resetPasswordTemplate(user.fullName, resetLink)
   );
 
   return res.json({ message: "Password reset link sent to email." });
@@ -281,7 +287,7 @@ export const resetPassword = async (req: Request, res: Response) => {
   const user = await User.findOne({ email }).select(
     "+password +resetPasswordToken +resetPasswordExpires"
   );
-  if (!user) return res.status(404).json({ message: "User not found" });
+  if (!user) return res.status(404).json({ message: "User tidak ditemukan" });
 
   if (!user.resetPasswordToken || !user.resetPasswordExpires)
     return res.status(400).json({ message: "No reset request found" });

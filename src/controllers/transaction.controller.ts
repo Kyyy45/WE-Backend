@@ -5,7 +5,7 @@ import Transaction from "../models/transaction.model";
 import Course from "../models/course.model";
 import Enrollment from "../models/enrollment.model";
 import { AuthenticatedRequest } from "../middlewares/verifyToken";
-import { sendMail } from "../utils/sendEmail";
+import { sendMail } from "../utils/email/sendEmail";
 import { logger } from "../utils/logger";
 import { setCache } from "../utils/dashboardCache";
 
