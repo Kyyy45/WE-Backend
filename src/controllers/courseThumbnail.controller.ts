@@ -5,9 +5,21 @@ import multer from "multer";
 import { logger } from "../utils/logger";
 
 const storage = multer.memoryStorage();
-export const uploadThumbnailMiddleware = multer({ storage }).single(
-  "thumbnail"
-);
+const MAX_THUMBNAIL_SIZE = 10 * 1024 * 1024;
+
+const imageFileFilter = (req: Request, file: Express.Multer.File, cb: multer.FileFilterCallback) => {
+  if (file.mimetype.startsWith("image/")) {
+    cb(null, true);
+  } else {
+    cb(new Error("Upload gagal: Hanya file gambar yang diizinkan!") as any, false);
+  }
+};
+
+export const uploadThumbnailMiddleware = multer({
+  storage: storage,
+  limits: { fileSize: MAX_THUMBNAIL_SIZE },
+  fileFilter: imageFileFilter
+}).single("thumbnail");
 
 /**
  * Upload thumbnail baru (admin only)

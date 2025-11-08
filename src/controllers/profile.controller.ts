@@ -9,7 +9,28 @@ import multer from "multer";
  * Konfigurasi multer untuk upload avatar
  */
 const storage = multer.memoryStorage();
-export const uploadAvatarMiddleware = multer({ storage }).single("avatar");
+const MAX_AVATAR_SIZE = 5 * 1024 * 1024;
+
+const imageFileFilter = (
+  req: Request,
+  file: Express.Multer.File,
+  cb: multer.FileFilterCallback
+) => {
+  if (file.mimetype.startsWith("image/")) {
+    cb(null, true);
+  } else {
+    cb(
+      new Error("Upload gagal: Hanya file gambar yang diizinkan!") as any,
+      false
+    );
+  }
+};
+
+export const uploadAvatarMiddleware = multer({
+  storage: storage,
+  limits: { fileSize: MAX_AVATAR_SIZE },
+  fileFilter: imageFileFilter
+}).single("avatar");
 
 /**
  * Upload avatar ke Cloudinary dan langsung update profil user
