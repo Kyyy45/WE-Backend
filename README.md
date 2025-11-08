@@ -1,7 +1,7 @@
 # 🌐 Worldpedia Education — Backend API Documentation
 
 Sistem ini dibangun dengan **Node.js (Express + TypeScript)** menggunakan arsitektur **MERN Stack**.
-Fitur utama meliputi autentikasi JWT, manajemen kursus, pendaftaran siswa, sistem rekomendasi, transaksi pembayaran (Midtrans), dashboard analitik, dan sertifikat digital.
+Fitur utama meliputi autentikasi JWT, pendaftaran siswa, transaksi pembayaran (Midtrans), manajemen kursus, sertifikat digital, Asisten Berbasis Aturan (Rule-Based Assistant), filter berbasis atribut (Atribute-Based Filtering), dashboard analytics.
 
 ---
 
@@ -65,17 +65,12 @@ CLOUDINARY_URL=...
 MIDTRANS_SERVER_KEY=...
 MIDTRANS_BASE_URL=...
 
-# DANA (jika digunakan)
-DANA_BASE_URL=...
-DANA_CLIENT_ID=...
-DANA_CLIENT_SECRET=...
-DANA_API_KEY=...
-
 # Keamanan & Lainnya
 RATE_LIMIT_POINTS=100
 RATE_LIMIT_DURATION=60
 DASHBOARD_CACHE_TTL=60
 DASHBOARD_MONTHS=6
+
 🔐 Authentication & Authorization
 Role	Deskripsi
 Admin	Mengelola pengguna, kursus, dashboard, transaksi.
@@ -116,9 +111,6 @@ Ekspor ke Spreadsheet
 8. 👤 Profile Routes — /profile
 (Lihat src/docs/profile.docs.ts untuk detail)
 
-9. 🤖 Recommendation Routes — /recommendations
-(Lihat src/docs/recommendation.docs.ts untuk detail)
-
 10. 💳 Transaction Routes — /transactions
 (Lihat src/docs/transaction.docs.ts untuk detail)
 
@@ -149,4 +141,4 @@ Payment: Midtrans Sandbox API
 
 Docs: Swagger UI → http://localhost:5000/api-docs
 
-📘 Author: Rizky Akbar 🎓 Project: Worldpedia Education (Chatbot + Recommendation + Analytics Dashboard)
+📘 Author: Rizky Akbar 🎓 Project: Worldpedia Education
