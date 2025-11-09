@@ -128,7 +128,7 @@ Pembayaran via Midtrans API (sandbox).
 
 Dashboard admin realtime (menggunakan agregasi MongoDB).
 
-Rekomendasi kursus berbasis content-based filtering.
+filter berbasis atribut (Atribute-Based Filtering)
 
 🧠 Developer Info
 Backend: Node.js, Express, TypeScript
